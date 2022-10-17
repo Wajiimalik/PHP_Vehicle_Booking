@@ -9,7 +9,8 @@ CREATE TABLE tb_vehicles
 	model VARCHAR(100) NOT NULL,
 	make VARCHAR(100) NOT NULL,
 	picture VARCHAR(65535) /*NOT NULL*/,
-	price DECIMAL(7,2) NOT NULL
+	price DECIMAL(7,2) NOT NULL,
+	description VARCHAR(250)
 );
 
 
