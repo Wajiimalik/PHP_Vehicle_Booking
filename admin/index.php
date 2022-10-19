@@ -1,6 +1,6 @@
 <?php
-$title = "Home Page";
-include('../Shared/Admin/head_include.php');
+    $title = "Home Page";
+    include('../Shared/Admin/head_include.php');
 ?>
 
 <!-- main body content -->
@@ -10,5 +10,5 @@ include('../Shared/Admin/head_include.php');
 </div>
 
 <?php
-include('../Shared/Admin/footer_include.php');
+    include('../Shared/Admin/footer_include.php');
 ?>
