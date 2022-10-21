@@ -42,9 +42,11 @@ try {
                         <td><?php echo $row["make"]; ?></td>
                         <td><?php echo $row["price"]; ?></td>
                         <td class="">
-                            <a href="edit.html" class="mx-2 action-icon"><i class="fa-solid fa-pen-to-square"></i></a>
-                            <button class="mx-2 action-icon"><i class="fa-solid fa-trash" onclick="deleteProduct('id', 'title')"></i></button>
-                            <a href="view.html" class="mx-2 action-icon"><i class="fa-solid fa-eye"></i></a>
+                            <a href="edit_vehicle.php?id=<?php echo $row["vehicle_id"]; ?>" class="mx-2 action-icon"><i class="fa-solid fa-pen-to-square"></i></a>
+
+                            <button class="mx-2 action-icon"><i class="fa-solid fa-trash" onclick="deleteProduct()"></i></button>
+
+                            <a href="view_vehicle.php?id=<?php echo $row["vehicle_id"]; ?>" class="mx-2 action-icon"><i class="fa-solid fa-eye"></i></a>
                         </td>
                     </tr>
                 <?php
