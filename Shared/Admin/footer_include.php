@@ -4,6 +4,7 @@
     </div>
 
     <script src="../Templates/Admin/js/bootstrap.bundle.min.js"></script>
+    <script src="../Templates/Admin/js/jquery.min.js"></script>
 </body>
 
 </html>

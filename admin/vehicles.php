@@ -3,6 +3,23 @@ $title = "All Vehicles";
 include('../Shared/Admin/head_include.php');
 
 include('../Shared/connection.php');
+
+
+if (isset($_POST["btn_delete_vehicle"])) {
+    try {
+        $vehicle_id = $_POST["vehicle_id"];
+        $stmt = $conn->prepare("DELETE FROM tb_vehicles WHERE vehicle_id = :vehicle_id ;");
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->execute();
+        header("location: vehicles.php");
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        $conn = null;
+        exit;
+    }
+}
+
 try {
     $stmt = $conn->prepare("SELECT * FROM tb_vehicles;");
     $stmt->execute();
@@ -44,7 +61,7 @@ try {
                         <td class="">
                             <a href="edit_vehicle.php?id=<?php echo $row["vehicle_id"]; ?>" class="mx-2 action-icon"><i class="fa-solid fa-pen-to-square"></i></a>
 
-                            <button class="mx-2 action-icon"><i class="fa-solid fa-trash" onclick="deleteProduct()"></i></button>
+                            <button onclick="DeleteVehicle(<?php echo $row['vehicle_id']; ?>)" class="mx-2 action-icon"><i class="fa-solid fa-trash""></i></button>
 
                             <a href="view_vehicle.php?id=<?php echo $row["vehicle_id"]; ?>" class="mx-2 action-icon"><i class="fa-solid fa-eye"></i></a>
                         </td>
@@ -71,7 +88,10 @@ try {
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
-                <button type="button" class="btn btn-primary">Delete</button>
+                <form action="vehicles.php" method="post">
+                    <input type="hidden" id="vehicle_id" name="vehicle_id" value="">
+                    <button type="submit" class="btn btn-primary" name="btn_delete_vehicle">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -82,3 +102,11 @@ try {
 <?php
 include('../Shared/Admin/footer_include.php');
 ?>
+
+<script>
+    function DeleteVehicle(id)
+    {
+        $("#vehicle_id").attr("value", id);
+        $("#deleteModal").modal("show");
+    }
+</script>
