@@ -9,12 +9,9 @@ if (!(isset($_GET["id"])   || isset($_POST["vehicle_id"]))) {
     exit;
 }
 
-if(isset($_GET["id"]))
-{
+if (isset($_GET["id"])) {
     $vehicle_id = $_GET["id"];
-}
-else
-{
+} else {
     $vehicle_id = $_POST["vehicle_id"];
 }
 
@@ -34,33 +31,51 @@ try {
     exit;
 }
 
-if(isset($_POST["btn_update_vehicle"]))
-{
+if (isset($_POST["btn_update_vehicle"])) {
     $vehicle_name = $_POST["vehicle_name"];
     $model = $_POST["model"];
     $make = $_POST["make"];
-    $picture = $_POST["picture"];
     $price = $_POST["price"];
     $description = $_POST["description"];
+    try {
 
-    try{
-        $stmt = $conn->prepare("UPDATE tb_vehicles SET vehicle_name= :vehicle_name, model = :model, make = :make, picture = :picture, price = :price, description = :description WHERE vehicle_id = :vehicle_id ;");
+        if (isset($_FILES["picture"]) && $_FILES["picture"]['error'] == 0) {
+            // image changed
+            include('../Shared/image_upload.php');
+            $fileResult = UploadImage($_FILES["picture"]);
 
-        $stmt->bindParam(':vehicle_id', $vehicle_id);
-        $stmt->bindParam(':vehicle_name', $vehicle_name);
-        $stmt->bindParam(':model', $model);
-        $stmt->bindParam(':make', $make);
-        $stmt->bindParam(':picture', $picture);
-        $stmt->bindParam(':price', $price);
-        $stmt->bindParam(':description', $description);
+            if ($fileResult["status"] == "success") {
+                $stmt = $conn->prepare("UPDATE tb_vehicles SET vehicle_name= :vehicle_name, model = :model, make = :make, picture = :picture, price = :price, description = :description WHERE vehicle_id = :vehicle_id ;");
+                $picture = $fileResult["uploadedFile"];
+                $stmt->bindParam(':vehicle_id', $vehicle_id);
+                $stmt->bindParam(':vehicle_name', $vehicle_name);
+                $stmt->bindParam(':model', $model);
+                $stmt->bindParam(':make', $make);
+                $stmt->bindParam(':picture', $picture);
+                $stmt->bindParam(':price', $price);
+                $stmt->bindParam(':description', $description);
+                $stmt->execute();
 
-        $stmt->execute();
-        
-        header("location: vehicles.php");
-        exit;
-    }
-    catch(PDOException $e)
-    {
+                header("location: vehicles.php");
+                exit;
+            } else {
+                echo $fileResult["msg"];
+            }
+        } else {
+            // not changed
+            $stmt = $conn->prepare("UPDATE tb_vehicles SET vehicle_name= :vehicle_name, model = :model, make = :make, price = :price, description = :description WHERE vehicle_id = :vehicle_id ;");
+            $stmt->bindParam(':vehicle_id', $vehicle_id);
+            $stmt->bindParam(':vehicle_name', $vehicle_name);
+            $stmt->bindParam(':model', $model);
+            $stmt->bindParam(':make', $make);
+            $stmt->bindParam(':price', $price);
+            $stmt->bindParam(':description', $description);
+            $stmt->execute();
+
+            header("location: vehicles.php");
+            exit;
+        }
+    } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
         $conn = null;
         exit;
@@ -74,7 +89,7 @@ if(isset($_POST["btn_update_vehicle"]))
 <div class="container">
     <h1 class="text-center my-5">Edit Vehicle</h1>
 
-    <form class="px-5" action="edit_vehicle.php" method="POST">
+    <form class="px-5" action="edit_vehicle.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="vehicle_id" value="<?php echo $vehicle["vehicle_id"]; ?>">
         <div class="row mb-3">
             <label for="" class="col-sm-2 col-form-label">Vehicle Name</label>
@@ -97,7 +112,19 @@ if(isset($_POST["btn_update_vehicle"]))
         <div class="row mb-3">
             <label for="" class="col-sm-2 col-form-label">Picture</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" placeholder="Picture" name="picture" value="<?php echo $vehicle["picture"]; ?>">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="file" class="form-control" placeholder="Picture" name="picture" onchange="ChangeShownImage(event)">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="<?php echo $vehicle["picture"]; ?>" alt="" height="100" id="shownImage">
+                    </div>
+                    <script>
+                        function ChangeShownImage(event) {
+                            document.getElementById("shownImage").src = URL.createObjectURL(event.target.files[0]);
+                        }
+                    </script>
+                </div>
             </div>
         </div>
         <div class="row mb-3">

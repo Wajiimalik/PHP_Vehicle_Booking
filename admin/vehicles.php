@@ -50,10 +50,12 @@ try {
             </thead>
             <tbody>
                 <?php
+                $totalPrice = 0;
                 foreach ($vehicles as $row) {
+                    $totalPrice += $row["price"];
                 ?>
                     <tr>
-                        <th scope="row"><img src="logo.png" width="50"></th>
+                        <th scope="row"><img src="<?php echo $row["picture"]; ?>" width="50"></th>
                         <td><?php echo $row["vehicle_name"]; ?></td>
                         <td><?php echo $row["model"]; ?></td>
                         <td><?php echo $row["make"]; ?></td>
@@ -70,6 +72,14 @@ try {
                 }
                 ?>
             </tbody>
+            <tfoot>
+            <th scope="col">Image</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col">Total</th>
+                    <th scope="col">PKR <?php echo $totalPrice; ?></th>
+                    <th scope="col"></th>
+            </tfoot>
         </table>
     </div>
 </div>

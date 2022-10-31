@@ -5,35 +5,46 @@ include('../Shared/Admin/head_include.php');
 
 if(isset($_POST["btn_add_vehicle"]))
 {
-    $vehicle_name = $_POST["vehicle_name"];
-    $model = $_POST["model"];
-    $make = $_POST["make"];
-    $picture = $_POST["picture"];
-    $price = $_POST["price"];
-    $description = $_POST["description"];
+    include('../Shared/image_upload.php');
 
-    include('../Shared/connection.php');
+    $fileResult = UploadImage($_FILES["picture"]);
 
-    try{
-        $stmt = $conn->prepare("INSERT INTO tb_vehicles(vehicle_name, model, make, picture, price, description) VALUES(:vehicle_name, :model, :make, :picture, :price, :description);");
-
-        $stmt->bindParam(':vehicle_name', $vehicle_name);
-        $stmt->bindParam(':model', $model);
-        $stmt->bindParam(':make', $make);
-        $stmt->bindParam(':picture', $picture);
-        $stmt->bindParam(':price', $price);
-        $stmt->bindParam(':description', $description);
-
-        $stmt->execute();
-        
-        header("location: vehicles.php");
-        exit;
-    }
-    catch(PDOException $e)
+    if($fileResult["status"] == "success")
     {
-        echo "Error: " . $e->getMessage();
-        $conn = null;
-        exit;
+        $vehicle_name = $_POST["vehicle_name"];
+        $model = $_POST["model"];
+        $make = $_POST["make"];
+        $picture = $fileResult["uploadedFile"];
+        $price = $_POST["price"];
+        $description = $_POST["description"];
+    
+        include('../Shared/connection.php');
+    
+        try{
+            $stmt = $conn->prepare("INSERT INTO tb_vehicles(vehicle_name, model, make, picture, price, description) VALUES(:vehicle_name, :model, :make, :picture, :price, :description);");
+    
+            $stmt->bindParam(':vehicle_name', $vehicle_name);
+            $stmt->bindParam(':model', $model);
+            $stmt->bindParam(':make', $make);
+            $stmt->bindParam(':picture', $picture);
+            $stmt->bindParam(':price', $price);
+            $stmt->bindParam(':description', $description);
+    
+            $stmt->execute();
+            
+            header("location: vehicles.php");
+            exit;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+            $conn = null;
+            exit;
+        }
+    }
+    else
+    {
+        echo $fileResult["msg"];
     }
 }
 
@@ -44,7 +55,7 @@ if(isset($_POST["btn_add_vehicle"]))
 <div class="container">
     <h1 class="text-center my-5">Add Vehicle</h1>
 
-    <form class="px-5" action="add_vehicle.php" method="POST">
+    <form class="px-5" action="add_vehicle.php" method="POST" enctype="multipart/form-data">
         <div class="row mb-3">
             <label for="" class="col-sm-2 col-form-label">Vehicle Name</label>
             <div class="col-sm-10">
@@ -66,7 +77,7 @@ if(isset($_POST["btn_add_vehicle"]))
         <div class="row mb-3">
             <label for="" class="col-sm-2 col-form-label">Picture</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" placeholder="Picture" name="picture">
+                <input type="file" class="form-control" placeholder="Picture" name="picture">
             </div>
         </div>
         <div class="row mb-3">

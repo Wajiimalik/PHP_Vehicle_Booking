@@ -75,7 +75,7 @@ if (isset($_POST["btn_delete_vehicle"])) {
                 </tr>
                 <tr>
                     <th scope="row">Picture</th>
-                    <td><?php echo $vehicle["picture"]; ?></td>
+                    <td><img src="<?php echo $vehicle["picture"]; ?>" alt="" height="100"></td>
                 </tr>
             </tbody>
         </table>
